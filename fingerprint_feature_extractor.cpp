@@ -127,6 +127,7 @@ int main( int argc, const char** argv )
     imshow("thinned versus selected corners", ccontainer); waitKey(0);
 
 
+    //Creating descriptor matrix
     Ptr<Feature2D> orb_descriptor = ORB::create();
     Mat descriptors;
     orb_descriptor->compute(input_thinned, keypoints, descriptors);
