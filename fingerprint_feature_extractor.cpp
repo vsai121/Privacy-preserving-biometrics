@@ -1,16 +1,7 @@
-/**********************************************************************************************
-This code is part of the code supplied with the OpenCV Blueprints book.
-It was written by Steven Puttemans, who can be contacted via steven.puttemans[at]kuleuven.be
-***********************************************************************************************
-Software for processing fingerprints
-
-USAGE
-./fingerprint_process
-***********************************************************************************************/
-
 #include "opencv2/opencv.hpp"
 #include "opencv2/xfeatures2d.hpp"
 #include <fstream>
+#include<bitset>
 
 using namespace std;
 using namespace cv;
@@ -49,6 +40,7 @@ void thinningIteration(Mat& im, int iter)
     im &= ~marker;
 }
 
+//comment
 // Function for thinning any given binary image within the range of 0-255. If not you should first make sure that your image has this range preset and configured!
 void thinning(Mat& im)
 {
@@ -134,7 +126,30 @@ int main( int argc, const char** argv )
     harris_c.copyTo( ccontainer( Rect(input.cols, 0, input.cols, input.rows) ) );
     imshow("thinned versus selected corners", ccontainer); waitKey(0);
 
-  
+
+    //Creating descriptor matrix
+    Ptr<Feature2D> orb_descriptor = ORB::create();
+    Mat descriptors;
+    orb_descriptor->compute(input_thinned, keypoints, descriptors);
+
+    vector<vector<int>> matrix(descriptors.rows, vector<int>(descriptors.cols));
+
+    for(int i = 0; i < descriptors.rows; i++) {
+      std::string binary_string = "";
+      for(int j = 0; j < descriptors.cols; j++) {
+        binary_string += bitset< 8 >( descriptors.at<uchar>(i,j) ).to_string();
+        matrix[i][j] = (bitset< 8 >( descriptors.at<uchar>(i,j) ).to_ulong());
+      }
+
+      cout << i << ") " << binary_string <<endl;
+    }
+
+    for(int i = 0 ; i< descriptors.rows ; i++){
+      for(int j = 0 ; j<descriptors.cols ; j++){
+        cout<<matrix[i][j]<<"  ";
+      }
+      cout<<endl;
+    }
 
 
     return 0;
