@@ -38,6 +38,7 @@ void getMinutiae(Mat& im, std::vector<Minutiae>& minutiae, int border ){
                     Minutiae minut(i, j, Minutiae::Type::RIDGEENDING);
                     minutiae.push_back(minut);
                     ridgeEndingCount++;
+
                 }else if(cn == 3){
                     Minutiae minut(i, j, Minutiae::Type::BIFURCATION);
                     minutiae.push_back(minut);

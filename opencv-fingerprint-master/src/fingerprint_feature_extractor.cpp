@@ -1,6 +1,8 @@
 #include "opencv2/opencv.hpp"
 #include "opencv2/xfeatures2d.hpp"
 #include <iostream>
+#include <fstream>
+#include<bitset>
 
 #include "AdaptiveLocalThreshold.h"
 #include "Ideka.h"
@@ -15,84 +17,37 @@ using namespace cv;
 using namespace cv::xfeatures2d;
 using namespace std;
 
-typedef void (*algorithm_function_ptr_t)(cv::Mat&);
-
-void originalImage(cv::Mat& source) {
-    return;
-}
-
-
-cv::Mat skeletonize(cv::Mat source, int threshold) {
-    algorithm_function_ptr_t algorithms[] = {GuoHall::thinning  };
-    int num_algorithms = sizeof(algorithms)/sizeof(algorithms[0]);
-
-
-    cv::Mat img = source.clone();
-    cv::threshold(img, img, threshold, 255, cv::THRESH_BINARY);
-
-    //cv::Mat temp(img.size(), CV_8UC1, cv::Scalar(0));
-    cv::Mat output(img.size().height, img.size().width * num_algorithms,  CV_8UC1, cv::Scalar(0));
-
-    for(int i=0; i<num_algorithms; i++) {
-        cv::Mat temp = img.clone();
-        algorithms[i](temp);
-
-        cv::Mat targetArea = output(cv::Rect(img.size().width * i, 0, img.size().width, img.size().height));
-        temp.copyTo(targetArea);
-    }
-
-    return output;
-}
-
-int trackbarValue = 127;
-cv::Mat sourceImage;
-
-
-void on_mouse(int event, int x, int y, int flags, void* param) {
-    if (event != cv::EVENT_LBUTTONDOWN) {
-        return;
-    }
-    std::cout << "Re-computing with threshold " << trackbarValue << std::endl;
-    cv::Mat output = skeletonize(sourceImage, trackbarValue);
-    imshow("Skeletenization", output); waitKey(0);
-
-}
 
 int main( int argc, const char* argv[] )
 {
 
   cout<<"Hello world\n";
-  Mat input = imread("../../data/image4.png", IMREAD_GRAYSCALE);
+  Mat input = imread("../../data/img1.png", IMREAD_GRAYSCALE);
 
   if(input.empty()){
     cerr << "Image not read correctly. Check if path is correct!" << endl;
   }
 
-  Mat input_binary;
-  threshold(input, input_binary, 0, 255, CV_THRESH_BINARY_INV | CV_THRESH_OTSU);
+  Mat img = input.clone();
+  localThreshold::binarisation(img, 41, 56);
+  cv::threshold(img, img, 50, 255, cv::THRESH_BINARY);
+  Mat binImg = img.clone();
+  ideka::binOptimisation(img);
 
-  // Compare both
-  Mat container(input.rows, input.cols*2, CV_8UC1);
-  input.copyTo( container( Rect(0, 0, input.cols, input.rows) ) );
-  input_binary.copyTo( container( Rect(input.cols, 0, input.cols, input.rows) ) );
-  imshow("input versus binary", container); waitKey(0);
 
-  cv::createTrackbar("Threshold", "Skeletenization", &trackbarValue, 255);
-  cv::setMouseCallback("Skeletenization", on_mouse);
 
-  // Thinning
-  cv::Mat input_thinned = skeletonize(input_binary, trackbarValue);
-  imshow("Skeletenization", input_thinned);
+  cv::bitwise_not(img, img);    //Inverse for bit-operations
+  GuoHall::thinning(img);
+  cv::bitwise_not(img, img);
 
-  cv::waitKey(0);
 
   vector<Minutiae> minutiae;
-  crossingNumber::getMinutiae(input_thinned, minutiae, 20);
+  crossingNumber::getMinutiae(img, minutiae, 20);
   cout<<"Minutaie size: " << minutiae.size() << endl;
 
   //Visualisation
-  Mat minutImg = input_thinned.clone();
-  cvtColor(input_thinned, minutImg, CV_GRAY2RGB);
+  Mat minutImg = img.clone();
+  cvtColor(img, minutImg, CV_GRAY2RGB);
 
   for(std::vector<Minutiae>::size_type i = 0; i<minutiae.size(); i++){
       //add an transparent square at each minutiae-location
@@ -118,8 +73,8 @@ int main( int argc, const char* argv[] )
   Filter::filterMinutiae(minutiae);
   cout<<"Performing filtering: " << minutiae.size() << endl;
 
-  Mat minutImg2 = input_thinned.clone();
-  cvtColor(input_thinned, minutImg2, CV_GRAY2RGB);
+  Mat minutImg2 = img.clone();
+  cvtColor(img, minutImg2, CV_GRAY2RGB);
   for(std::vector<Minutiae>::size_type i = 0; i<minutiae.size(); i++){
       //add an transparent square at each minutiae-location
       int squareSize = 5;     //has to be uneven
@@ -135,10 +90,44 @@ int main( int argc, const char* argv[] )
 
   }
        // Create a window for display.
-  imshow( "Minutiae after filtering", minutImg2 );                 // Show our image inside it.
+  imshow( "Minutiae after filtering", minutImg2 );
+  waitKey(0);
+
+  vector<KeyPoint> keypoints;
+
+  for(std::vector<Minutiae>::size_type i = 0; i<minutiae.size(); i++){
+
+      //cout<<minutiae[i].getLocX()<<"   "<<minutiae[i].getLocY()<<"     "<<minutiae[i].getType()<<"  "<<endl;
+      keypoints.push_back(KeyPoint(minutiae[i].getLocX(), minutiae[i].getLocY(), minutiae[i].getType()));
+  }
 
 
-  waitKey(0);                // Show our image inside it.
+  Ptr<Feature2D> orb_descriptor = ORB::create();
+  Mat descriptors;
+  orb_descriptor->compute(img, keypoints, descriptors);
+
+  vector<vector<int>> matrix(descriptors.rows, vector<int>(descriptors.cols));
+
+  for(int i = 0; i < descriptors.rows; i++) {
+    std::string binary_string = "";
+    for(int j = 0; j < descriptors.cols; j++) {
+      binary_string += bitset< 8 >( descriptors.at<uchar>(i,j) ).to_string();
+      matrix[i][j] = (bitset< 8 >( descriptors.at<uchar>(i,j) ).to_ulong());
+    }
+
+    cout << i << ") " << binary_string <<endl;
+  }
+
+  for(int i = 0 ; i< descriptors.rows ; i++){
+    for(int j = 0 ; j<descriptors.cols ; j++){
+      cout<<matrix[i][j]<<"  ";
+    }
+    cout<<endl;
+  }
+
+
+
+  waitKey(0);
 
 
 
