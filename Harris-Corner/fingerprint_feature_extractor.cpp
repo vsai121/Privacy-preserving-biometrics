@@ -1,4 +1,4 @@
-#include "opencv2/opencv.hpp"
+r gen#include "opencv2/opencv.hpp"
 #include "opencv2/xfeatures2d.hpp"
 #include <fstream>
 #include<bitset>
@@ -65,7 +65,7 @@ int main( int argc, const char** argv )
 {
     // Read in an input image - directly in grayscale CV_8UC1
     // This will be our test fingerprint
-    Mat input = imread("./data/image1.png", IMREAD_GRAYSCALE);
+    Mat input = imread("./data/image7.png", IMREAD_GRAYSCALE);
     if(input.empty()){
 	    cerr << "Image not read correctly. Check if path is correct!" << endl;
     }
