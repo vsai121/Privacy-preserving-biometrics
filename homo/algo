@@ -1,0 +1,13 @@
+algorithm gives the smallest of the two integers a and b by comparing them bit by bit
+
+minimum(a,b):
+1. set cmp = 1
+2. for each bit ai of a and bi of b:
+    2.1. if ai != bi
+        2.1.1. cmp = ai
+    2.2. else
+        2.2.1. cmp = cmp
+3. if cmp = 0       //i.e. the last time an inequality occurred, ai was 0
+    3.1. return a
+4. else             //i.e. the last time an inequality occurred, ai was 1
+    4.1 return b        
