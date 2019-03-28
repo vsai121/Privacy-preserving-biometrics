@@ -1,4 +1,4 @@
-#include "FHE.h"
+#include <helib/FHE.h>
 int hamming(long a, long b) {
 	int count = 0;
 	for(int i = 0; i < 32; i++){
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
     n1.SetLength(numbits);
     n2.SetLength(numbits);
     con.SetLength(numbits);
-    for(int i = 0; i < numbits; i++){
+    for(int i = 0; i < numbits; i++) {
         n1[i] = (num1>>i)&1;
         n2[i] = ((num2>>(numbits-i-1))&1);
         con[i] = ((C>>i)&1);

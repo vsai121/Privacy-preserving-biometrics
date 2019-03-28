@@ -1,7 +1,7 @@
-#include "FHE.h"
+#include <helib/FHE.h>
 #include <fstream>
 
-int main () {
+int keyGen (char * secKeyFileName, char * pubKeyFileName) {
     /*** BEGIN INITIALIZATION ***/
 	long m = 0;                   // Specific modulus
 	long p = 1021;                // Plaintext base [default=2], should be a prime number
@@ -13,26 +13,26 @@ int main () {
 	long k = 128;                 // Security parameter [default=80] 
     long s = 0;                   // Minimum number of slots [default=0]
 
-	std::cout << "Finding m... " << std::flush;
+	//std::cout << "Finding m... " << std::flush;
 	m = FindM(k, L, c, p, d, s, 0);                            // Find a value for m given the specified values
-	std::cout << "m = " << m << std::endl;
+	//std::cout << "m = " << m << std::endl;
 	
-	std::cout << "Initializing context... " << std::flush;
+	//std::cout << "Initializing context... " << std::flush;
 	FHEcontext context(m, p, r); 	                        // Initialize context
 	buildModChain(context, L, c);                           // Modify the context, adding primes to the modulus chain
-	std::cout << "OK!" << std::endl;
+	//std::cout << "OK!" << std::endl;
 
-	std::cout << "Creating polynomial... " << std::flush;
+	//std::cout << "Creating polynomial... " << std::flush;
 	NTL::ZZX G =  context.alMod.getFactorsOverZZ()[0];                // Creates the polynomial used to encrypt the data
-	std::cout << "OK!" << std::endl;
+	//std::cout << "OK!" << std::endl;
 
-	std::cout << "Generating keys... " << std::flush;
+	//std::cout << "Generating keys... " << std::flush;
 	FHESecKey secretKey(context);                           // Construct a secret key structure
 	const FHEPubKey& publicKey = secretKey;                 // An "upcast": FHESecKey is a subclass of FHEPubKey
 	secretKey.GenSecKey(w);                                 // Actually generate a secret key with Hamming weight w
 
-    fstream secKeyFile("seckey.txt", fstream::out|fstream::trunc);
-    fstream pubKeyFile("pubkey.txt", fstream::out|fstream::trunc);
+    std::fstream secKeyFile(secKeyFileName, std::fstream::out|std::fstream::trunc);
+    std::fstream pubKeyFile(pubKeyFileName, std::fstream::out|std::fstream::trunc);
 
     writeContextBase(secKeyFile, context);
     writeContextBase(pubKeyFile, context);
@@ -41,6 +41,14 @@ int main () {
     
     secKeyFile << secretKey << std::endl;
     pubKeyFile << publicKey << std::endl;
+
+    secKeyFile.close();
+    pubKeyFile.close();
+
+    return 0;
 }
 
-
+int main()
+{
+    std::cout << "Helo world!";
+}

@@ -1,6 +1,8 @@
-#include "FHE.h"
+#include <fstream>
+#include <helib/FHE.h>
+#include "ppb_lib.hpp"
 
-Ctxt hamming_dist(Ctxt inp1, Ctxt inp2) {
+Ctxt hamming_dist(Ctxt enc1, Ctxt enc2, int numbits) {
     Ctxt enc11 = enc1;
 	Ctxt enc22 = enc2;
 	NTL::ZZX con;
@@ -18,43 +20,65 @@ Ctxt hamming_dist(Ctxt inp1, Ctxt inp2) {
 	return hammingenc;
 }
 
-void gen_key_to_file(FHEcontext context, string pubkey_file, string privkey_file) {
-    fstream sec_key_file(privkey_file, fstream::out|fstream::trunc);
-    fstream pub_key_file(pubkey_file, fstream::out|fstream::trunc);
+FHEcontext gen_key_to_file(long m, long p, long r, long L, long c, std::string pubkey_file, std::string privkey_file) {
+	FHEcontext context(m, p, r); 	                        // Initialize context
+	buildModChain(context, L, c);                           // Modify the context, adding primes to the modulus chain
+
+	NTL::ZZX G =  context.alMod.getFactorsOverZZ()[0];                // Creates the polynomial used to encrypt the data
+
+    std::fstream sec_key_file(privkey_file, std::fstream::out|std::fstream::trunc);
+    std::fstream pub_key_file(pubkey_file, std::fstream::out|std::fstream::trunc);
     writeContextBase(sec_key_file, context);
     writeContextBase(pub_key_file, context);
     sec_key_file << context << std::endl;
     pub_key_file << context << std::endl;
+
     FHESecKey secretKey(context);
-    const FHEPubKey& publickey = secretKey;
+    pub_key_file << secretKey << std::endl;
+    //const FHEPubKey& publicKey = secretKey;
     secretKey.GenSecKey(64);
-    addSome1DMatrices(secretKey);
+    //addSome1DMatrices(secretKey);
+    
     sec_key_file << secretKey << std::endl;
-    pub_key_file << publicKey << std::endl;
     sec_key_file.close();
     pub_key_file.close();
+    return context;
 }
 
-FHESecKey read_sec_key_from_file(string seckey_file) {
-    fstream sec_key_file(seckey_file, fstream::in);
+FHESecKey read_sec_key_from_file(std::string skfname) {
+    std::fstream skfptr(skfname, std::fstream::in);
     unsigned long m, p, r;
-    vector<long> gens, ords;
-    sec_key_file >> context;
+    std::vector<long> gens, ords;
+    readContextBase(skfptr, m, p, r, gens, ords);
+    FHEcontext context(m, p, r);
+
+    skfptr >> context;
     FHESecKey secret_key(context);
-    sec_key_file >> secret_key;
-    sec_key_file.close();
+    skfptr >> secret_key;
+    skfptr.close();
     return secret_key;
 }
 
-FHEPubKey read_pub_key_from_file(string pubkey_file) {
-    fstream pub_key_file(pubkey_file, fstream::in);
+FHEPubKey read_pub_key_from_file(std::string pkfname) {
+    std::fstream pkfptr(pkfname, std::fstream::in);
     unsigned long m, p, r;
-    vector<long> gens, ords;
-    readContextBase(pub_key_file, m, p, r, gens, ords);
-    FHEContext context(m, p, r, gens, ords);
-    pub_key_file >> context;
-    FHEPubKey public_key(context);
-    pub_key_file >> public_key;
-    pub_key_file.close();
+    std::vector<long> gens, ords;
+    readContextBase(pkfptr, m, p, r, gens, ords);
+    FHEcontext context(m, p, r, gens, ords);
+    pkfptr >> context;
+    FHESecKey secret_key(context);
+    const FHEPubKey& public_key = secret_key;
+    pkfptr >> secret_key;
+    pkfptr.close();
     return public_key;
+}
+
+FHEcontext read_context_from_file(std::string fname) {
+    std::fstream fptr(fname, std::fstream::in);
+    unsigned long m, p, r;
+    std::vector<long> gens, ords;
+    readContextBase(fptr, m, p, r, gens, ords);
+    FHEcontext context(m, p, r, gens, ords);
+    fptr >> context;
+    return context;
 }
