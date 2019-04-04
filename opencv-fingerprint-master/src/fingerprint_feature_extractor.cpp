@@ -118,12 +118,22 @@ int main( int argc, const char* argv[] )
     cout << i << ") " << binary_string <<endl;
   }
 
+  fstream featureFile("feature.txt", fstream::out);
+  featureFile<<"[ "<<descriptors.rows<<" ]"<<endl;
+
   for(int i = 0 ; i< descriptors.rows ; i++){
+    featureFile<<"[ ";
     for(int j = 0 ; j<descriptors.cols ; j++){
       cout<<matrix[i][j]<<"  ";
+      featureFile<< matrix[i][j]<<" ";
+
     }
     cout<<endl;
+    featureFile<<"]";
+    featureFile<<endl;
   }
+
+  featureFile.close();
 
 
 
