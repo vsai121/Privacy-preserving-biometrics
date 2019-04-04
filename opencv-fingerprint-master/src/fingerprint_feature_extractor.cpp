@@ -50,17 +50,16 @@ int main( int argc, const char* argv[] )
   cvtColor(img, minutImg, CV_GRAY2RGB);
 
   for(std::vector<Minutiae>::size_type i = 0; i<minutiae.size(); i++){
-      //add an transparent square at each minutiae-location
-      int squareSize = 3;     //has to be uneven
+      int squareSize = 3;
       Mat roi = minutImg(Rect(minutiae[i].getLocX()-squareSize/2, minutiae[i].getLocY()-squareSize/2, squareSize, squareSize));
       double alpha = 0.3;
 
 
       if(minutiae[i].getType() == Minutiae::Type::RIDGEENDING){
-          Mat color(roi.size(), CV_8UC3, cv::Scalar(255,0,0));    //blue square for ridgeending
+          Mat color(roi.size(), CV_8UC3, cv::Scalar(255,0,0));
           addWeighted(color, alpha, roi, 1.0 - alpha , 0.0, roi);
       }else if(minutiae[i].getType() == Minutiae::Type::BIFURCATION){
-          Mat color(roi.size(), CV_8UC3, cv::Scalar(0,0,255));    //red square for bifurcation
+          Mat color(roi.size(), CV_8UC3, cv::Scalar(0,0,255));
           addWeighted(color, alpha, roi, 1.0 - alpha , 0.0, roi);
       }
 
@@ -76,20 +75,20 @@ int main( int argc, const char* argv[] )
   Mat minutImg2 = img.clone();
   cvtColor(img, minutImg2, CV_GRAY2RGB);
   for(std::vector<Minutiae>::size_type i = 0; i<minutiae.size(); i++){
-      //add an transparent square at each minutiae-location
+
       int squareSize = 5;     //has to be uneven
       Mat roi = minutImg2(Rect(minutiae[i].getLocX()-squareSize/2, minutiae[i].getLocY()-squareSize/2, squareSize, squareSize));
       double alpha = 0.3;
       if(minutiae[i].getType() == Minutiae::Type::RIDGEENDING){
-          Mat color(roi.size(), CV_8UC3, cv::Scalar(255,0,0));    //blue square for ridgeending
+          Mat color(roi.size(), CV_8UC3, cv::Scalar(255,0,0));
           addWeighted(color, alpha, roi, 1.0 - alpha , 0.0, roi);
       }else if(minutiae[i].getType() == Minutiae::Type::BIFURCATION){
-          Mat color(roi.size(), CV_8UC3, cv::Scalar(0,0,255));    //red square for bifurcation
+          Mat color(roi.size(), CV_8UC3, cv::Scalar(0,0,255));
           addWeighted(color, alpha, roi, 1.0 - alpha , 0.0, roi);
       }
 
   }
-       // Create a window for display.
+
   imshow( "Minutiae after filtering", minutImg2 );
   waitKey(0);
 
