@@ -117,7 +117,7 @@ int main( int argc, const char* argv[] )
     cout << i << ") " << binary_string <<endl;
   }
 
-  fstream featureFile("feature.txt", fstream::out);
+  fstream featureFile("../FeatureData/feature.txt", fstream::out);
   featureFile<<"[ "<<descriptors.rows<<" ]"<<endl;
 
   for(int i = 0 ; i< descriptors.rows ; i++){
