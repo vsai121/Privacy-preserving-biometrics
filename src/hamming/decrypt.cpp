@@ -23,17 +23,40 @@ int main(int argc, char **argv)
 
 	secKeyFile >> secretKey;
 
+	int numd1, numd2;
+	// Read number of ciphers
+	fstream resultFile("result.txt", fstream::in);	
+	seekPastChar(resultFile, '[');
+	resultFile >> numd1;
+	seekPastChar(resultFie, ']');
+	seekPastChar(resultFile, '[');
+	resultFile >> numd2;
+	seekPastChar(resultFile, ']');
 
-	// Read ciphertext from file
-	fstream ciphertextFile("result.txt", fstream::in);	
+	std::unique_ptr<Ctxt> ctxts[numd1][numd2];
+
+	for(int i = 0; i < numd1; i++)
+	{
+		for(int j = 0; j < numd2; j++)
+		{
+			ctxts[i][j].reset(new Ctxt(publicKey));
+			resultFile >> *ctxts[i][j];
+		}
+	}	
+
 	Ctxt ctxt(publicKey);
 	ciphertextFile >> ctxt;
 	
     	int nslots = 32;
-	NTL::ZZX result;
-	secretKey.Decrypt(result, ctxt);
+	NTL::ZZX result[numd1][numd2];
 	
-	std::cout << "Hamming Distance: " << std::endl <<  result[nslots*8-1] << std::endl;
+	for(int i = 0; i < numd1; i++)
+	{
+		for(int j = 0; j < numd2; j++)
+		{
+			secretKey.Decrypt(result[i][j], *ctxts[i][j]);
+		}
+	}	
 
 	return 0;
 }
