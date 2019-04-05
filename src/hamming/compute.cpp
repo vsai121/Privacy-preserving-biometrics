@@ -4,6 +4,7 @@
 #include <fstream>
 #include <NTL/ZZX.h>
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -45,7 +46,51 @@ int main(int argc, char **argv)
 	
 	pubKeyFile.close();
 
-    	// Read ciphertexts from file
+	fstream ctext1file("ciphertext.txt", fstream::in);
+	seekPastChar(ctext1file, '[');
+	int numd1;
+	ctext1file >> numd1;
+	seekPastChar(ctext1file, ']');
+	vector<Ctxt> client_des;
+	for(int i = 0; i < numd1; i++) {
+		Ctxt des(publicKey);
+		ctext1file >> des;
+		client_des.push_back(des);
+	}
+	ctext1file.close();
+
+	fstream ctext2file("ciphertext2.txt", fstream::in);
+	seekPastChar(ctext2file, '[');
+	int numd2;
+	ctext2file >> numd2;
+	seekPastChar(ctext2file, ']');
+	vector<Ctxt> server_des;
+	for(int i = 0; i < numd2; i++) {
+		Ctxt des(publicKey);
+		ctext2file >> des;
+		server_des.push_back(des);
+	}
+	ctext2file.close();
+
+	vector<Ctxt> computed;
+	for(int i=0; i<numd1; i++) {
+		Ctxt c1 = client_des.at(i);
+		for(int j=0; j<numd2; j++) {
+			computed.push_back(hamming_dist(c1, server_des.at(j), 256));
+		}
+	}
+
+	fstream computed2file("computed.txt", fstream::out);
+	computed2file << "[" << numd1 << "]" << endl;
+	computed2file << "[" << numd2 << "]" << endl;
+	for (int i = 0; i < numd1*numd2; i++) {
+		computed2file << computed.at(i);
+	}
+	computed2file.close();
+
+
+
+	/*	// Read ciphertexts from file
 	fstream ciphertextFile("ciphertext.txt", fstream::in);	
 	Ctxt ctxt1(publicKey);
     	Ctxt ctxt2(publicKey);
@@ -62,4 +107,5 @@ int main(int argc, char **argv)
 
     	//ciphertexts written to file
     	std::cout << "Ciphertexts written to file!" << std::endl;
+*/
 }

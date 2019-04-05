@@ -66,22 +66,23 @@ int main(int argc, char **argv)
 	//do packing
 	int num;
     	NTL::ZZX n[numd];
-
+	
 	for(int di = 0; di < numd; di++)
 	{
 		n[di].SetLength(nslots*8);
     		for(int i = 0; i < nslots; i++) {
-			num = ptxt[di][i];
-			for(int j = 0; j < 8; j++) {
-				n[di][8*(i+1)-j-1] = (num>>j)&1;
-			}
+				num = ptxt[di][i];
+				for(int j = 0; j < 8; j++) {
+					n[di][8*(i+1)-j-1] = (num>>j)&1;
+				}
     		}
 		std::cout << n[di] << std::endl;
 	}
 	//packed ntl vectors are stored in n, now output to file
 	std::fstream ciphertextFile("ciphertext.txt", fstream::out|fstream::trunc);
 	assert(ciphertextFile.is_open());
-
+	ciphertextFile << "[" << numd << "]" << endl;
+	
 	for(int di = 0; di < numd; di++)
 	{
 		Ctxt ct(publicKey);
