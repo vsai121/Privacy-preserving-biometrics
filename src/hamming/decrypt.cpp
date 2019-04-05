@@ -25,10 +25,10 @@ int main(int argc, char **argv)
 
 	int numd1, numd2;
 	// Read number of ciphers
-	fstream resultFile("result.txt", fstream::in);	
+	fstream resultFile("computed.txt", fstream::in);	
 	seekPastChar(resultFile, '[');
 	resultFile >> numd1;
-	seekPastChar(resultFie, ']');
+	seekPastChar(resultFile, ']');
 	seekPastChar(resultFile, '[');
 	resultFile >> numd2;
 	seekPastChar(resultFile, ']');
@@ -44,8 +44,6 @@ int main(int argc, char **argv)
 		}
 	}	
 
-	Ctxt ctxt(publicKey);
-	ciphertextFile >> ctxt;
 	
     	int nslots = 32;
 	NTL::ZZX result[numd1][numd2];
@@ -55,6 +53,7 @@ int main(int argc, char **argv)
 		for(int j = 0; j < numd2; j++)
 		{
 			secretKey.Decrypt(result[i][j], *ctxts[i][j]);
+			std::cout << result[i][j][nslots*8-1] << std::endl;
 		}
 	}	
 

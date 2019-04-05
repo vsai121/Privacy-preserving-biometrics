@@ -45,10 +45,10 @@ int main(int argc, char **argv)
 	pubKeyFile >> publicKey;	
 	
 	pubKeyFile.close();
-
+	std::cout << "Read cipher" << std::endl;
 	fstream ctext1file("ciphertext.txt", fstream::in);
-	seekPastChar(ctext1file, '[');
 	int numd1;
+	seekPastChar(ctext1file, '[');
 	ctext1file >> numd1;
 	seekPastChar(ctext1file, ']');
 	vector<Ctxt> client_des;
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 		client_des.push_back(des);
 	}
 	ctext1file.close();
-
+	std::cout << "Read cipher" << std::endl;
 	fstream ctext2file("ciphertext2.txt", fstream::in);
 	seekPastChar(ctext2file, '[');
 	int numd2;
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 		server_des.push_back(des);
 	}
 	ctext2file.close();
-
+	std::cout << "Started computing" << std::endl;
 	vector<Ctxt> computed;
 	for(int i=0; i<numd1; i++) {
 		Ctxt c1 = client_des.at(i);
