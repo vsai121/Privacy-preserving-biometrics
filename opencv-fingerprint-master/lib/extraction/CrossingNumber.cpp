@@ -10,11 +10,9 @@ namespace crossingNumber {
 
 void getMinutiae(Mat& im, std::vector<Minutiae>& minutiae, int border ){
     if(border < 1){
-        std::cout<<"Randbereich zu klein gewählt!" << std::endl;
         border = 2;
     }
 
-    int ridgeEndingCount = 0;
     int bifurcationCount = 0;
     for(int i = border; i<=(im.cols-border); i++){
         for(int j = border; j<=(im.rows-border); j++){
@@ -34,12 +32,7 @@ void getMinutiae(Mat& im, std::vector<Minutiae>& minutiae, int border ){
                 cn = cn/2;
                 //std::cout<<"cn = " << cn << std::endl;
 
-                if(cn == 1){
-                    Minutiae minut(i, j, Minutiae::Type::RIDGEENDING);
-                    minutiae.push_back(minut);
-                    ridgeEndingCount++;
-
-                }else if(cn == 3){
+                if(cn == 3){
                     Minutiae minut(i, j, Minutiae::Type::BIFURCATION);
                     minutiae.push_back(minut);
                     bifurcationCount++;
@@ -47,9 +40,11 @@ void getMinutiae(Mat& im, std::vector<Minutiae>& minutiae, int border ){
             }
         }
     }
-    std::cout<<"Anzahl gefundener Ridge-Endings: " << ridgeEndingCount << std::endl;
-    std::cout<<"Anzahl gefundener Bifurcations: " << bifurcationCount << std::endl;
+
+    std::cout<<"Bifurcations count: " << bifurcationCount << std::endl;
 }
+
+
 
 
 

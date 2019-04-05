@@ -10,12 +10,12 @@ namespace Filter{
         bool same = true;
         //calculate for every minutiae the distance to all other minutiae
         for(std::vector<Minutiae>::size_type i = 0; i<minutiae.size(); i++){
-            if(minutiae[i].getType() == Minutiae::Type::RIDGEENDING){
+            if(minutiae[i].getType() == Minutiae::Type::BIFURCATION){
                 for(std::vector<Minutiae>::size_type j = 0; j<minutiae.size(); j++){
                     if(j==i){
                         same = true;
                     }
-                    if((minutiae[j].getType() == Minutiae::Type::RIDGEENDING) && !same){ //(minutiae[j].getType() == Minutiae::Type::RIDGEENDING) &&
+                    if((minutiae[j].getType() == Minutiae::Type::BIFURCATION) && !same){ //(minutiae[j].getType() == Minutiae::Type::RIDGEENDING) &&
                         double distance = euclideanDistance(minutiae[i].getLocX(), minutiae[i].getLocY(), minutiae[j].getLocX(), minutiae[j].getLocY());
                         //if the distance is to low...
                         if(distance < minDistanceForMinutiae){
@@ -46,5 +46,7 @@ namespace Filter{
     double euclideanDistance(int x1, int y1, int x2, int y2){
         return sqrt(((x1-x2)*(x1-x2)) + ((y1-y2)*(y1-y2)));
     }
+
+
 
 }
