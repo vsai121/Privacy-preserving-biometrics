@@ -35,6 +35,7 @@ int main(int argc, char **argv)
 
 	std::unique_ptr<Ctxt> ctxts[numd1][numd2];
 
+	std::cout << "NumD1 = " << numd1 << "NumD2 = " << std::endl;
 	for(int i = 0; i < numd1; i++)
 	{
 		for(int j = 0; j < numd2; j++)
@@ -45,7 +46,7 @@ int main(int argc, char **argv)
 	}	
 
 	
-    	int nslots = 32;
+    	int nslots = 2;
 	NTL::ZZX result[numd1][numd2];
 	
 	for(int i = 0; i < numd1; i++)

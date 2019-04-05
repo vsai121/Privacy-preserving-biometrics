@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 	pubKeyFile.close();
 
 	uint numd = 0;		
-	uint nslots = 32;
+	uint nslots = 2;
 	cout << "Number of slots is " << nslots << endl;
 
 	std::fstream messageFile("message.txt", fstream::in);
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 	seekPastChar(messageFile, ']');
 
 	//read into vectors
-	std::vector<std::vector <int>> ptxt(numd, vector<int>(32, 0));
+	std::vector<std::vector <int>> ptxt(numd, vector<int>(nslots, 0));
 	for(int di = 0; di < numd; di++)
 	{
 		seekPastChar(messageFile, '[');

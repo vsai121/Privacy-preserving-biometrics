@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 	pubKeyFile.close();
 
 	uint numd = 0;		
-	uint nslots = 32;
+	uint nslots = 2;
 	cout << "Number of slots is " << nslots << endl;
 
 	std::fstream messageFile("message2.txt", fstream::in);
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 	seekPastChar(messageFile, ']');
 
 	//read into vectors
-	std::vector<std::vector <int>> ptxt(numd, vector<int>(32, 0));
+	std::vector<std::vector <int>> ptxt(numd, vector<int>(2, 0));
 	for(int di = 0; di < numd; di++)
 	{
 		seekPastChar(messageFile, '[');
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 		for (int count = 0; count < nslots; count++) {
 			int v;
 			messageFile >> v;
-        		ptxt[di][count] = v;
+        		ptxt[di][nslots-count-1] = v;
 		}
 		
     		seekPastChar(messageFile, ']');
@@ -81,7 +81,8 @@ int main(int argc, char **argv)
 	//packed ntl vectors are stored in n, now output to file
 	std::fstream ciphertextFile("ciphertext2.txt", fstream::out|fstream::trunc);
 	assert(ciphertextFile.is_open());
-
+	
+	ciphertextFile << "[ " << numd << " ]" << endl;
 	for(int di = 0; di < numd; di++)
 	{
 		Ctxt ct(publicKey);

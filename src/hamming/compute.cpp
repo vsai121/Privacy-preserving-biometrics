@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 	assert(pubKeyFile.is_open());
 	unsigned long m, p, r;
 	vector<long> gens, ords;
-	int nslots = 32;
+	int nslots = 2;
 
 	readContextBase(pubKeyFile, m, p, r, gens, ords);
 	FHEcontext context(m, p, r, gens, ords);
@@ -45,19 +45,42 @@ int main(int argc, char **argv)
 	pubKeyFile >> publicKey;	
 	
 	pubKeyFile.close();
-	std::cout << "Read cipher" << std::endl;
+	std::cout << "Read cipher 1" << std::endl;
 	fstream ctext1file("ciphertext.txt", fstream::in);
 	int numd1;
 	seekPastChar(ctext1file, '[');
 	ctext1file >> numd1;
 	seekPastChar(ctext1file, ']');
+	/*
 	vector<Ctxt> client_des;
 	for(int i = 0; i < numd1; i++) {
 		Ctxt des(publicKey);
 		ctext1file >> des;
 		client_des.push_back(des);
 	}
+	*/
+	std::unique_ptr<Ctxt> cdesc[numd1];
+	for(int i = 0; i < numd1; i++) {
+		cdesc[i].reset(new Ctxt(publicKey));
+		ctext1file >> *cdesc[i];
+	}
 	ctext1file.close();
+
+	std::cout << "Read cipher 1" << std::endl;
+	fstream ctext2file("ciphertext2.txt", fstream::in);
+	int numd2;
+	seekPastChar(ctext2file, '[');
+	ctext2file >> numd2;
+	seekPastChar(ctext2file, ']');
+	
+	std::unique_ptr<Ctxt> sdesc[numd1];
+	for(int i = 0; i < numd2; i++) {
+		sdesc[i].reset(new Ctxt(publicKey));
+		ctext2file >> *sdesc[i];
+	}
+	ctext2file.close();
+
+/*
 	std::cout << "Read cipher" << std::endl;
 	fstream ctext2file("ciphertext2.txt", fstream::in);
 	seekPastChar(ctext2file, '[');
@@ -71,6 +94,8 @@ int main(int argc, char **argv)
 		server_des.push_back(des);
 	}
 	ctext2file.close();
+*/
+	/*
 	std::cout << "Started computing" << std::endl;
 	vector<Ctxt> computed;
 	for(int i=0; i<numd1; i++) {
@@ -88,24 +113,18 @@ int main(int argc, char **argv)
 	}
 	computed2file.close();
 
-
-
-	/*	// Read ciphertexts from file
-	fstream ciphertextFile("ciphertext.txt", fstream::in);	
-	Ctxt ctxt1(publicKey);
-    	Ctxt ctxt2(publicKey);
-
-    	ciphertextFile >> ctxt1;
-	ciphertextFile >> ctxt2;
-
-    	Ctxt hammingenc = hamming_dist(ctxt1, ctxt2, nslots*8);
-
-    	// Output ciphertext to file
-	std::fstream resultFile("result.txt", fstream::out|fstream::trunc);
-	assert(resultFile.is_open());
-	resultFile << hammingenc;
-
-    	//ciphertexts written to file
-    	std::cout << "Ciphertexts written to file!" << std::endl;
 */
+	fstream resfp("computed.txt", fstream::out);
+	resfp << "[ " << numd1 << " ]" << endl;
+	resfp << "[ " << numd2 << " ]" << endl;
+	std::cout << "Started computing" << std::endl;
+	for(int i = 0; i < numd1; i++) 
+	{
+		for(int j = 0; j < numd2; j++)
+		{
+			Ctxt sol = hamming_dist(*cdesc[i],*sdesc[j],nslots*8);
+			resfp << sol;
+		}
+	}
+	resfp.close();
 }
