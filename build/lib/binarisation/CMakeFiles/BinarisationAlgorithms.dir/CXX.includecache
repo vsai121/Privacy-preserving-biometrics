@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/archit/software/git/Privacy-preserving-biometrics/lib/binarisation/AdaptiveLocalThreshold.cpp
+AdaptiveLocalThreshold.h
+/home/archit/software/git/Privacy-preserving-biometrics/lib/binarisation/AdaptiveLocalThreshold.h
+opencv2/core/core.hpp
+-
+opencv2/imgproc/imgproc.hpp
+-
+iostream
+-
+algorithm
+-
+iterator
+-
+
+/home/archit/software/git/Privacy-preserving-biometrics/lib/binarisation/AdaptiveLocalThreshold.h
+opencv2/imgproc/imgproc.hpp
+-
+

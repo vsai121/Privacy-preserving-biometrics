@@ -1,0 +1,2 @@
+/usr/bin/ar qc libExtractionAlgorithms.a  CMakeFiles/ExtractionAlgorithms.dir/Filter.cpp.o CMakeFiles/ExtractionAlgorithms.dir/Minutiae.cpp.o CMakeFiles/ExtractionAlgorithms.dir/CrossingNumber.cpp.o
+/usr/bin/ranlib libExtractionAlgorithms.a

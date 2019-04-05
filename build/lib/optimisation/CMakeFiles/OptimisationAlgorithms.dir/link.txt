@@ -1,0 +1,2 @@
+/usr/bin/ar qc libOptimisationAlgorithms.a  CMakeFiles/OptimisationAlgorithms.dir/Ideka.cpp.o
+/usr/bin/ranlib libOptimisationAlgorithms.a

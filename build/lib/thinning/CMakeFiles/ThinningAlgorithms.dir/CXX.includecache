@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/archit/software/git/Privacy-preserving-biometrics/lib/thinning/GuoHall.cpp
+GuoHall.h
+/home/archit/software/git/Privacy-preserving-biometrics/lib/thinning/GuoHall.h
+opencv2/highgui/highgui.hpp
+-
+opencv2/imgproc/imgproc.hpp
+-
+
+/home/archit/software/git/Privacy-preserving-biometrics/lib/thinning/GuoHall.h
+opencv2/imgproc/imgproc.hpp
+-
+
+/home/archit/software/git/Privacy-preserving-biometrics/lib/thinning/ZhangSuen.cpp
+opencv2/imgproc/imgproc.hpp
+-
+opencv2/highgui/highgui.hpp
+-
+ZhangSuen.h
+/home/archit/software/git/Privacy-preserving-biometrics/lib/thinning/ZhangSuen.h
+
+/home/archit/software/git/Privacy-preserving-biometrics/lib/thinning/ZhangSuen.h
+opencv2/imgproc/imgproc.hpp
+-
+

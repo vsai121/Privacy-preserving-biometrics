@@ -1,0 +1,2 @@
+/usr/bin/ar qc libBinarisationAlgorithms.a  CMakeFiles/BinarisationAlgorithms.dir/AdaptiveLocalThreshold.cpp.o
+/usr/bin/ranlib libBinarisationAlgorithms.a

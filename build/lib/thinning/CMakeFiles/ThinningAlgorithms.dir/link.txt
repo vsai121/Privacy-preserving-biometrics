@@ -1,0 +1,2 @@
+/usr/bin/ar qc libThinningAlgorithms.a  CMakeFiles/ThinningAlgorithms.dir/GuoHall.cpp.o CMakeFiles/ThinningAlgorithms.dir/ZhangSuen.cpp.o
+/usr/bin/ranlib libThinningAlgorithms.a
