@@ -2,7 +2,6 @@
 #include <helib/EncryptedArray.h>
 #include <helib/FHE.h>
 #include <fstream>
-#include "myUtils.h"
 #include <NTL/ZZX.h>
 #include <iostream>
 
@@ -30,13 +29,11 @@ int main(int argc, char **argv)
 	Ctxt ctxt(publicKey);
 	ciphertextFile >> ctxt;
 	
-    int nslots = 32;
+    	int nslots = 32;
 	NTL::ZZX result;
 	secretKey.Decrypt(result, ctxt);
 	
-	std::vector<long int> decrypted(nslots,0);	
-	
-	std::cout << "Hamming Distance: " << std::endl <<  result[nslots-1] << std::endl;
+	std::cout << "Hamming Distance: " << std::endl <<  result[nslots*8-1] << std::endl;
 
 	return 0;
 }

@@ -47,7 +47,7 @@ int main( int argc, const char* argv[] )
 
   //Visualisation
   Mat minutImg = img.clone();
-  cvtColor(img, minutImg, CV_GRAY2RGB);
+  cvtColor(img, minutImg, cv::COLOR_GRAY2RGB);
 
   for(std::vector<Minutiae>::size_type i = 0; i<minutiae.size(); i++){
       int squareSize = 3;
@@ -73,7 +73,7 @@ int main( int argc, const char* argv[] )
   cout<<"Performing filtering: " << minutiae.size() << endl;
 
   Mat minutImg2 = img.clone();
-  cvtColor(img, minutImg2, CV_GRAY2RGB);
+  cvtColor(img, minutImg2, cv::COLOR_GRAY2RGB);
   for(std::vector<Minutiae>::size_type i = 0; i<minutiae.size(); i++){
 
       int squareSize = 5;     //has to be uneven

@@ -18,8 +18,11 @@ add_executable(keyGen keyGenerator.cpp)
 add_executable(encrypt encrypt.cpp)
 add_executable(decrypt decrypt.cpp)
 add_executable(compute compute.cpp)
+add_executable(enroll enroll.cpp)
 
 target_link_libraries(keyGen helib)
 target_link_libraries(encrypt helib)
 target_link_libraries(decrypt helib)
 target_link_libraries(compute helib)
+target_link_libraries(enroll helib)
+

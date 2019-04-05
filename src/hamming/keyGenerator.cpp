@@ -2,7 +2,6 @@
 #include <helib/EncryptedArray.h>
 #include <helib/FHE.h>
 #include <fstream>
-#include "myUtils.h"
 #include <NTL/ZZX.h>
 #include <iostream>
 

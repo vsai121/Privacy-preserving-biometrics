@@ -29,11 +29,12 @@ Ctxt hamming_dist(Ctxt enc1, Ctxt enc2, int numbits) {
 
 int main(int argc, char **argv)
 {
-    // Read the public key from disk
+    	// Read the public key from disk
 	fstream pubKeyFile("pubkey.txt", fstream::in);
 	assert(pubKeyFile.is_open());
 	unsigned long m, p, r;
 	vector<long> gens, ords;
+	int nslots = 32;
 
 	readContextBase(pubKeyFile, m, p, r, gens, ords);
 	FHEcontext context(m, p, r, gens, ords);
@@ -44,20 +45,21 @@ int main(int argc, char **argv)
 	
 	pubKeyFile.close();
 
-    // Read ciphertexts from file
+    	// Read ciphertexts from file
 	fstream ciphertextFile("ciphertext.txt", fstream::in);	
 	Ctxt ctxt1(publicKey);
-    Ctxt ctxt2(publicKey);
+    	Ctxt ctxt2(publicKey);
 
-    ciphertextFile >> ctxt1;
-    ciphertextFile >> ctxt2;
+    	ciphertextFile >> ctxt1;
+	ciphertextFile >> ctxt2;
 
-    Ctxt hammingenc = hamming_dist(ctxt1, ctxt2, 32);
+    	Ctxt hammingenc = hamming_dist(ctxt1, ctxt2, nslots*8);
 
-    // Output ciphertext to file
+    	// Output ciphertext to file
 	std::fstream resultFile("result.txt", fstream::out|fstream::trunc);
 	assert(resultFile.is_open());
 	resultFile << hammingenc;
-    //ciphertexts written to file
-    std::cout << "Ciphertexts written to file!" << std::endl;
+
+    	//ciphertexts written to file
+    	std::cout << "Ciphertexts written to file!" << std::endl;
 }
