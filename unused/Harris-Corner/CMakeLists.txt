@@ -1,5 +1,0 @@
-cmake_minimum_required(VERSION 2.8)
-project( fingerprint_process )
-find_package( OpenCV REQUIRED )
-add_executable( fingerprint_process fingerprint_feature_extractor.cpp )
-target_link_libraries( fingerprint_process ${OpenCV_LIBS} )
