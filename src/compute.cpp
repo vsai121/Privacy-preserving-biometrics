@@ -11,7 +11,7 @@ using namespace std;
 //script to read ciphertexts and compute
 
 Ctxt hamming_dist(Ctxt enc1, Ctxt enc2, int numbits) {
-    Ctxt enc11 = enc1;
+	Ctxt enc11 = enc1;
 	Ctxt enc22 = enc2;
 	NTL::ZZX con;
 	con.SetLength(numbits);
@@ -51,14 +51,7 @@ int main(int argc, char **argv)
 	seekPastChar(ctext1file, '[');
 	ctext1file >> numd1;
 	seekPastChar(ctext1file, ']');
-	/*
-	vector<Ctxt> client_des;
-	for(int i = 0; i < numd1; i++) {
-		Ctxt des(publicKey);
-		ctext1file >> des;
-		client_des.push_back(des);
-	}
-	*/
+
 	std::unique_ptr<Ctxt> cdesc[numd1];
 	for(int i = 0; i < numd1; i++) {
 		cdesc[i].reset(new Ctxt(publicKey));
@@ -80,51 +73,30 @@ int main(int argc, char **argv)
 	}
 	ctext2file.close();
 
-/*
-	std::cout << "Read cipher" << std::endl;
-	fstream ctext2file("ciphertext2.txt", fstream::in);
-	seekPastChar(ctext2file, '[');
-	int numd2;
-	ctext2file >> numd2;
-	seekPastChar(ctext2file, ']');
-	vector<Ctxt> server_des;
-	for(int i = 0; i < numd2; i++) {
-		Ctxt des(publicKey);
-		ctext2file >> des;
-		server_des.push_back(des);
-	}
-	ctext2file.close();
-*/
-	/*
-	std::cout << "Started computing" << std::endl;
-	vector<Ctxt> computed;
-	for(int i=0; i<numd1; i++) {
-		Ctxt c1 = client_des.at(i);
-		for(int j=0; j<numd2; j++) {
-			computed.push_back(hamming_dist(c1, server_des.at(j), 256));
-		}
-	}
-
-	fstream computed2file("computed.txt", fstream::out);
-	computed2file << "[" << numd1 << "]" << endl;
-	computed2file << "[" << numd2 << "]" << endl;
-	for (int i = 0; i < numd1*numd2; i++) {
-		computed2file << computed.at(i);
-	}
-	computed2file.close();
-
-*/
+	std::unique_ptr<Ctxt> hvec[numd1][numd2];
 	fstream resfp("computed.txt", fstream::out);
 	resfp << "[ " << numd1 << " ]" << endl;
 	resfp << "[ " << numd2 << " ]" << endl;
 	std::cout << "Started computing" << std::endl;
+
 	for(int i = 0; i < numd1; i++) 
 	{
 		for(int j = 0; j < numd2; j++)
 		{
-			Ctxt sol = hamming_dist(*cdesc[i],*sdesc[j],nslots*8);
-			resfp << sol;
+			hvec[i][j].reset(new Ctxt(publicKey));
+			*hvec[i][j] = hamming_dist(*cdesc[i],*sdesc[j],nslots*8);
 		}
 	}
+	std::cout << "Finished computing" << std::endl;
+	std::cout << "Started writing" << std::endl;
+	for(int i = 0; i < numd1; i++)
+	{
+		for(int j =0; j < numd2; j++)
+		{
+			resfp << *hvec[i][j];
+		}
+	}
+	std::cout << "Finished writing" << std::endl;
+
 	resfp.close();
 }

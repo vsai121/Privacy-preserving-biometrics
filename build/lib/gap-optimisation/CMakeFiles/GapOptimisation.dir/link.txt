@@ -1,2 +1,0 @@
-/usr/bin/ar qc libGapOptimisation.a  CMakeFiles/GapOptimisation.dir/GapOptimisation.cpp.o
-/usr/bin/ranlib libGapOptimisation.a

@@ -35,7 +35,8 @@ int main(int argc, char **argv)
 
 	std::unique_ptr<Ctxt> ctxts[numd1][numd2];
 
-	std::cout << "NumD1 = " << numd1 << "NumD2 = " << std::endl;
+	std::cout << "NumD1 = " << numd1 << "NumD2 = " << numd2 << std::endl;
+	std::cout << "Started reading from file" << std::endl;
 	for(int i = 0; i < numd1; i++)
 	{
 		for(int j = 0; j < numd2; j++)
@@ -43,20 +44,34 @@ int main(int argc, char **argv)
 			ctxts[i][j].reset(new Ctxt(publicKey));
 			resultFile >> *ctxts[i][j];
 		}
-	}	
+	}
 
 	
     	int nslots = 32;
 	NTL::ZZX result[numd1][numd2];
-	
+	std::cout << "Started decrypting" << std::endl;
 	for(int i = 0; i < numd1; i++)
 	{
 		for(int j = 0; j < numd2; j++)
 		{
 			secretKey.Decrypt(result[i][j], *ctxts[i][j]);
-			std::cout << result[i][j][nslots*8-1] << std::endl;
 		}
-	}	
-
+	}
+	std::cout << "Finished decrypting" << std::endl;
+	NTL::ZZ score;
+	NTL::ZZ min;
+	//generate a score
+	for(int i = 0; i < numd1; i++)
+	{
+		min = result[i][0][nslots*8-1];
+		std::cout << "Min init = " << min << std::endl;
+		for(int j = 0; j < numd2; j++) {
+			if(result[i][j][nslots*8-1] < min)
+				min = result[i][j][nslots*8-1];
+		}
+		std::cout << "Min = " << min << std::endl;
+		score += min;
+	}
+	std::cout << "Score = " << score << std::endl;
 	return 0;
 }
