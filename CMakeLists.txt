@@ -3,6 +3,8 @@ project(SecureBiometrics
 LANGUAGES CXX)
 find_package( OpenCV REQUIRED )
 find_package(helib 1.0.0 EXACT REQUIRED)
+find_package( OpenCV REQUIRED )
+find_package(OpenMP)
 
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
@@ -23,7 +25,7 @@ add_executable(enroll src/enroll.cpp)
 target_link_libraries(keyGen helib)
 target_link_libraries(encrypt helib)
 target_link_libraries(decrypt helib)
-target_link_libraries(compute helib)
+target_link_libraries(compute helib OpenMP::OpenMP_CXX)
 target_link_libraries(enroll helib)
 
 include_directories ("${PROJECT_SOURCE_DIR}/lib/thinning")

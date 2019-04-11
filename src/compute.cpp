@@ -6,7 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <ctime>
-#include <time.h>
+#include <sys/time.h>
 
 using namespace std;
 
@@ -96,19 +96,22 @@ int main(int argc, char **argv)
 	resfp << "[ " << numd1 << " ]" << endl;
 	resfp << "[ " << numd2 << " ]" << endl;
 	std::cout << "Started computing" << std::endl;
-	srand (time(NULL));
-	clock_t start = clock();
+
+	struct timeval start, end;
+	gettimeofday(&start, NULL);
 	for(int i = 0; i < numd1; i++) 
 	{
+		#pragma omp parallel for shared(cdesc, sdesc, precdesc, presdesc, hvec, publicKey, i)
 		for(int j = 0; j < numd2; j++)
 		{
 			hvec[i][j].reset(new Ctxt(publicKey));
 			*hvec[i][j] = hamming_dist_opt(*cdesc[i],*sdesc[j],*precdesc[i],*presdesc[j],nslots*8);
 		}
 	}
-	clock_t end = clock();
-	clock_t hamm_time = end-start;
-	std::cout << "Total hamming distance calculation time is " << double(hamm_time*1000)/CLOCKS_PER_SEC << std::endl;
+	gettimeofday(&end, NULL);
+	double hamm_time = (end.tv_sec  - start.tv_sec) * 1000L + 
+         (end.tv_usec - start.tv_usec) / 1000L;
+	std::cout << "Total hamming distance calculation time is " << hamm_time << std::endl;
 	std::cout << "Finished computing" << std::endl;
 	std::cout << "Started writing" << std::endl;
 	for(int i = 0; i < numd1; i++)
