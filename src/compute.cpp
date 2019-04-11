@@ -5,6 +5,8 @@
 #include <NTL/ZZX.h>
 #include <iostream>
 #include <vector>
+#include <ctime>
+#include <time.h>
 
 using namespace std;
 
@@ -19,6 +21,16 @@ Ctxt hamming_dist(Ctxt enc1, Ctxt enc2, int numbits) {
 		con[i] = 1;
 	enc11.multByConstant(con);
 	enc22.multByConstant(con);
+	Ctxt hammingenc = enc1;
+	hammingenc *= enc2;
+	hammingenc.multByConstant(NTL::ZZX(2));
+	hammingenc -= enc11;
+	hammingenc -= enc22;
+	hammingenc.multByConstant(NTL::ZZX(-1));
+	return hammingenc;
+}
+
+Ctxt hamming_dist_opt(Ctxt enc1, Ctxt enc2, Ctxt enc11, Ctxt enc22, int numbits) {
 	Ctxt hammingenc = enc1;
 	hammingenc *= enc2;
 	hammingenc.multByConstant(NTL::ZZX(2));
@@ -53,9 +65,12 @@ int main(int argc, char **argv)
 	seekPastChar(ctext1file, ']');
 
 	std::unique_ptr<Ctxt> cdesc[numd1];
+	std::unique_ptr<Ctxt> precdesc[numd1];
 	for(int i = 0; i < numd1; i++) {
 		cdesc[i].reset(new Ctxt(publicKey));
+		precdesc[i].reset(new Ctxt(publicKey));
 		ctext1file >> *cdesc[i];
+		ctext1file >> *precdesc[i];
 	}
 	ctext1file.close();
 
@@ -66,10 +81,13 @@ int main(int argc, char **argv)
 	ctext2file >> numd2;
 	seekPastChar(ctext2file, ']');
 	
-	std::unique_ptr<Ctxt> sdesc[numd1];
+	std::unique_ptr<Ctxt> sdesc[numd2];
+	std::unique_ptr<Ctxt> presdesc[numd2];
 	for(int i = 0; i < numd2; i++) {
 		sdesc[i].reset(new Ctxt(publicKey));
+		presdesc[i].reset(new Ctxt(publicKey));
 		ctext2file >> *sdesc[i];
+		ctext2file >> *presdesc[i];
 	}
 	ctext2file.close();
 
@@ -78,15 +96,19 @@ int main(int argc, char **argv)
 	resfp << "[ " << numd1 << " ]" << endl;
 	resfp << "[ " << numd2 << " ]" << endl;
 	std::cout << "Started computing" << std::endl;
-
+	srand (time(NULL));
+	clock_t start = clock();
 	for(int i = 0; i < numd1; i++) 
 	{
 		for(int j = 0; j < numd2; j++)
 		{
 			hvec[i][j].reset(new Ctxt(publicKey));
-			*hvec[i][j] = hamming_dist(*cdesc[i],*sdesc[j],nslots*8);
+			*hvec[i][j] = hamming_dist_opt(*cdesc[i],*sdesc[j],*precdesc[i],*presdesc[j],nslots*8);
 		}
 	}
+	clock_t end = clock();
+	clock_t hamm_time = end-start;
+	std::cout << "Total hamming distance calculation time is " << double(hamm_time*1000)/CLOCKS_PER_SEC << std::endl;
 	std::cout << "Finished computing" << std::endl;
 	std::cout << "Started writing" << std::endl;
 	for(int i = 0; i < numd1; i++)
