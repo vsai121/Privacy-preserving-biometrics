@@ -83,11 +83,19 @@ int main(int argc, char **argv)
 	assert(ciphertextFile.is_open());
 	ciphertextFile << "[" << numd << "]" << endl;
 	
+	NTL::ZZX con;
+	con.SetLength(nslots*8);
+	for(int i=0;i<nslots*8;i++)
+		con[i] = 1;
+	
 	for(int di = 0; di < numd; di++)
 	{
 		Ctxt ct(publicKey);
 		publicKey.Encrypt(ct, n[di]);
+		Ctxt AC = ct;
+		AC.multByConstant(con);
 		ciphertextFile << ct;
+		ciphertextFile << AC;
 	}
     		
 	// Output ciphertext to file
