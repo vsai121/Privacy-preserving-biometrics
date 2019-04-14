@@ -12,6 +12,8 @@
 #include "Filter.h"
 #include "ZhangSuen.h"
 #include "Minutiae.h"
+#include "GapOptimisation.h"
+#include "Ideka.h"
 
 
 
@@ -104,8 +106,8 @@ vector<KeyPoint> computeKeypoints(Mat img){
 
 
 
-  //imshow( "Minutiae after filtering", minutImg2 );
-  //waitKey(0);
+  imshow( "Minutiae after filtering", minutImg2 );
+  waitKey(0);
 
 
   vector<KeyPoint> keypoints;
@@ -179,19 +181,73 @@ Mat computeDescriptors(Mat img, vector<KeyPoint> keypoints){
 }
 
 
+Mat enhanceImg(Mat myImg){
+
+		 // prepare the output matrix for filters
+	 Mat gabor1 = Mat (myImg.rows, myImg.cols, CV_8UC1);
+	 Mat gabor2  = Mat (myImg.rows, myImg.cols, CV_8UC1);
+	 Mat gabor3 = Mat (myImg.rows, myImg.cols, CV_8UC1);
+	 Mat gabor4  = Mat (myImg.rows, myImg.cols, CV_8UC1);
+	 Mat enhanced = Mat (myImg.rows, myImg.cols, CV_8UC1);
+
+		 //predefine parameters for Gabor kernel
+	 Size kSize = Size(31,31);
+
+	 double theta1 = 0;
+	 double theta2 = 45;
+	 double theta3 = 90;
+	 double theta4 = 135;
+
+	 double lambda = 10;
+	 double sigma = 24;
+	 double gamma = 1;
+	 double psi =  0;
+
+	 myImg.convertTo(myImg, CV_32F);
+
+
+
+			// the filters kernel
+	 Mat kernel1 = getGaborKernel(kSize, sigma, theta1, lambda, gamma, psi, CV_32F);
+	 Mat kernel2 = getGaborKernel(kSize, sigma, theta2, lambda, gamma, psi, CV_32F);
+	 Mat kernel3 = getGaborKernel(kSize, sigma, theta3, lambda, gamma, psi, CV_32F);
+	 Mat kernel4 = getGaborKernel(kSize, sigma, theta4, lambda, gamma, psi, CV_32F);
+
+	 filter2D(myImg, gabor1, -1, kernel1);
+	 filter2D(myImg, gabor2, -1, kernel2);
+	 filter2D(myImg, gabor3, -1, kernel3);
+	 filter2D(myImg, gabor4, -1, kernel4);
+
+
+	 cout<<enhanced.channels();
+
+	 /*
+
+
+	 addWeighted(enhanced , 0, gabor1, 1, 0, enhanced);
+ 	 addWeighted(enhanced , 1, gabor2, 1, 0, enhanced);
+ 	 addWeighted(enhanced , 1, gabor3, 1, 0, enhanced);
+ 	 addWeighted(enhanced , 1, gabor4, 1, 0, enhanced); */
+
+	 return enhanced;
+}
+
+
 int main( int argc, const char* argv[] )
 {
 
 	Mat input1 = imread(argv[1], IMREAD_GRAYSCALE);
 	Mat input2 = imread(argv[2], IMREAD_GRAYSCALE);
 
+
 	Mat binarisedImg1 = binarise(input1);
+
+
 	//imshow( "Minutaie", binarisedImg1 );
   //waitKey(0);
 	Mat binarisedImg2 = binarise(input2);
 	//imshow( "Minutaie", binarisedImg2 );
 	//waitKey(0);
-
 
 	Mat thinnedImg1 = thin(binarisedImg1);
 	//imshow( "Minutaie", thinnedImg1 );
@@ -199,6 +255,8 @@ int main( int argc, const char* argv[] )
 	Mat thinnedImg2 = thin(binarisedImg2);
 	//imshow( "Minutaie", thinnedImg2 );
   //waitKey(0);
+
+
 
 
   vector<KeyPoint> keypoints1 = computeKeypoints(thinnedImg1);
@@ -216,7 +274,9 @@ int main( int argc, const char* argv[] )
         DMatch current_match = matches[i];
         score = score + current_match.distance;
     }
-    cerr << endl << "Current matching score = " << score/(descriptors1.rows) << endl;
+    cerr << endl << "Current matching score = " << score/(descriptors1.rows ) << endl;
+		cout<<"Descriptor 1 rows  "<< descriptors1.rows<<endl;
+			cout<<"Descriptor 2 rows  "<< descriptors2.rows<<endl;
 
 
 }
