@@ -14,6 +14,8 @@
 #include "Minutiae.h"
 #include "GapOptimisation.h"
 #include "Ideka.h"
+#include "fpenhancement.h"
+#include "commonfiles.h"
 
 
 
@@ -106,8 +108,8 @@ vector<KeyPoint> computeKeypoints(Mat img){
 
 
 
-  //imshow( "Minutiae after filtering", minutImg2 );
-  //waitKey(0);
+  imshow( "Minutiae after filtering", minutImg2 );
+  waitKey(0);
 
 
   vector<KeyPoint> keypoints;
@@ -132,7 +134,7 @@ vector<KeyPoint> computeKeypoints(Mat img){
 }
 
 
-Mat computeDescriptors(Mat img, vector<KeyPoint> keypoints, const char *fname){
+Mat computeDescriptors(Mat img, vector<KeyPoint> keypoints){
 
 
   Ptr<Feature2D> orb_descriptor = ORB::create();
@@ -159,7 +161,7 @@ Mat computeDescriptors(Mat img, vector<KeyPoint> keypoints, const char *fname){
 
   }
 
-  fstream featureFile(fname, fstream::out);
+  fstream featureFile("feature.txt", fstream::out);
   featureFile<<"[ "<<descriptors.rows<<" ]"<<endl;
 
   for(int i = 0 ; i< descriptors.rows ; i++){
@@ -239,6 +241,20 @@ int main( int argc, const char* argv[] )
 	Mat input1 = imread(argv[1], IMREAD_GRAYSCALE);
 	Mat input2 = imread(argv[2], IMREAD_GRAYSCALE);
 
+	FPEnhancement fpEnhancement;
+	input1 = fpEnhancement.run(input1);
+	input2 - fpEnhancement.run(input2);
+
+	imshow("enhanced img", input1);
+	waitKey(0);
+
+	imshow("enhanced img", input2);
+	waitKey(0);
+
+
+	input1.convertTo(input1, CV_8U);
+	input2.convertTo(input2, CV_8U);
+
 
 	Mat binarisedImg1 = binarise(input1);
 
@@ -262,8 +278,8 @@ int main( int argc, const char* argv[] )
   vector<KeyPoint> keypoints1 = computeKeypoints(thinnedImg1);
   vector<KeyPoint> keypoints2 = computeKeypoints(thinnedImg2);
 
-	Mat descriptors1 = computeDescriptors(binarisedImg1, keypoints1, "feature.txt");
-	Mat descriptors2 = computeDescriptors(binarisedImg2, keypoints2, "feature2.txt");
+	Mat descriptors1 = computeDescriptors(binarisedImg1, keypoints1);
+	Mat descriptors2 = computeDescriptors(binarisedImg2, keypoints2);
 
   Ptr<BFMatcher> matcher = BFMatcher::create(NORM_HAMMING, false);
   vector< DMatch > matches;
@@ -274,10 +290,9 @@ int main( int argc, const char* argv[] )
         DMatch current_match = matches[i];
         score = score + current_match.distance;
     }
-//    cerr << endl << "Current matching score = " << score/(descriptors1.rows ) << endl;
-//		cout<<"Descriptor 1 rows  "<< descriptors1.rows<<endl;
-//			cout<<"Descriptor 2 rows  "<< descriptors2.rows<<endl;
-   cout << score/(descriptors1.rows) << endl;
+    cerr << endl << "Current matching score = " << score/(descriptors1.rows ) << endl;
+		cout<<"Descriptor 1 rows  "<< descriptors1.rows<<endl;
+			cout<<"Descriptor 2 rows  "<< descriptors2.rows<<endl;
 
 
 }

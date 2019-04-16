@@ -1,0 +1,2 @@
+/usr/bin/ar qc libpreProcessAlgorithms.a  CMakeFiles/preProcessAlgorithms.dir/fpenhancement.cpp.o CMakeFiles/preProcessAlgorithms.dir/checksize.cpp.o CMakeFiles/preProcessAlgorithms.dir/normalizer.cpp.o CMakeFiles/preProcessAlgorithms.dir/ridgefilter.cpp.o CMakeFiles/preProcessAlgorithms.dir/ridgeorient.cpp.o
+/usr/bin/ranlib libpreProcessAlgorithms.a
