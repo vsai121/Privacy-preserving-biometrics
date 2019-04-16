@@ -106,8 +106,8 @@ vector<KeyPoint> computeKeypoints(Mat img){
 
 
 
-  imshow( "Minutiae after filtering", minutImg2 );
-  waitKey(0);
+  //imshow( "Minutiae after filtering", minutImg2 );
+  //waitKey(0);
 
 
   vector<KeyPoint> keypoints;
@@ -132,7 +132,7 @@ vector<KeyPoint> computeKeypoints(Mat img){
 }
 
 
-Mat computeDescriptors(Mat img, vector<KeyPoint> keypoints){
+Mat computeDescriptors(Mat img, vector<KeyPoint> keypoints, const char *fname){
 
 
   Ptr<Feature2D> orb_descriptor = ORB::create();
@@ -159,7 +159,7 @@ Mat computeDescriptors(Mat img, vector<KeyPoint> keypoints){
 
   }
 
-  fstream featureFile("feature.txt", fstream::out);
+  fstream featureFile(fname, fstream::out);
   featureFile<<"[ "<<descriptors.rows<<" ]"<<endl;
 
   for(int i = 0 ; i< descriptors.rows ; i++){
@@ -262,8 +262,8 @@ int main( int argc, const char* argv[] )
   vector<KeyPoint> keypoints1 = computeKeypoints(thinnedImg1);
   vector<KeyPoint> keypoints2 = computeKeypoints(thinnedImg2);
 
-	Mat descriptors1 = computeDescriptors(binarisedImg1, keypoints1);
-	Mat descriptors2 = computeDescriptors(binarisedImg2, keypoints2);
+	Mat descriptors1 = computeDescriptors(binarisedImg1, keypoints1, "feature.txt");
+	Mat descriptors2 = computeDescriptors(binarisedImg2, keypoints2, "feature2.txt");
 
   Ptr<BFMatcher> matcher = BFMatcher::create(NORM_HAMMING, false);
   vector< DMatch > matches;
@@ -274,9 +274,10 @@ int main( int argc, const char* argv[] )
         DMatch current_match = matches[i];
         score = score + current_match.distance;
     }
-    cerr << endl << "Current matching score = " << score/(descriptors1.rows ) << endl;
-		cout<<"Descriptor 1 rows  "<< descriptors1.rows<<endl;
-			cout<<"Descriptor 2 rows  "<< descriptors2.rows<<endl;
+//    cerr << endl << "Current matching score = " << score/(descriptors1.rows ) << endl;
+//		cout<<"Descriptor 1 rows  "<< descriptors1.rows<<endl;
+//			cout<<"Descriptor 2 rows  "<< descriptors2.rows<<endl;
+   cout << score/(descriptors1.rows) << endl;
 
 
 }

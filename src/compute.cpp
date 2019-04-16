@@ -111,7 +111,7 @@ int main(int argc, char **argv)
 	gettimeofday(&end, NULL);
 	double hamm_time = (end.tv_sec  - start.tv_sec) * 1000L + 
          (end.tv_usec - start.tv_usec) / 1000L;
-	std::cout << "Total hamming distance calculation time is " << hamm_time << std::endl;
+	std::cout << "Total hamming distance calculation time is " << hamm_time/1000 << std::endl;
 	std::cout << "Finished computing" << std::endl;
 	std::cout << "Started writing" << std::endl;
 	for(int i = 0; i < numd1; i++)

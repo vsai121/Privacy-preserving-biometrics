@@ -72,6 +72,6 @@ int main(int argc, char **argv)
 		std::cout << "Min = " << min << std::endl;
 		score += min;
 	}
-	std::cout << "Score = " << score << std::endl;
+	std::cout << "Score = " << score/numd1 << std::endl;
 	return 0;
 }
