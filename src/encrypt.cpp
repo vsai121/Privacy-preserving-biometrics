@@ -17,7 +17,7 @@ int hamming(int a, int b) {
 
 int main(int argc, char **argv)
 {
-	// Read the public key from disk
+	// Read the public key from dist
 	fstream pubKeyFile("pubkey.txt", fstream::in);
 	assert(pubKeyFile.is_open());
 	unsigned long m, p, r;
@@ -34,9 +34,9 @@ int main(int argc, char **argv)
 
 	uint numd = 0;		
 	uint nslots = 32;
-	cout << "Number of slots is " << nslots << endl;
+	//cout << "Number of slots is " << nslots << endl;
 
-	std::fstream messageFile("feature.txt", fstream::in);
+	std::fstream messageFile(argv[1], fstream::in);
 	assert(messageFile.is_open());
 
     	seekPastChar(messageFile, '[');
@@ -56,12 +56,11 @@ int main(int argc, char **argv)
 			messageFile >> v;
         		ptxt[di][count] = v;
 		}
-		
     		seekPastChar(messageFile, ']');
 	}
 
 	messageFile.close();
-	std::cout << ptxt << std::endl;
+	//	std::cout << ptxt << std::endl;
 	 
 	//do packing
 	int num;
@@ -76,7 +75,7 @@ int main(int argc, char **argv)
 					n[di][8*(i+1)-j-1] = (num>>j)&1;
 				}
     		}
-		std::cout << n[di] << std::endl;
+		//std::cout << n[di] << std::endl;
 	}
 	//packed ntl vectors are stored in n, now output to file
 	std::fstream ciphertextFile("ciphertext.txt", fstream::out|fstream::trunc);
@@ -101,6 +100,6 @@ int main(int argc, char **argv)
 	// Output ciphertext to file
 	ciphertextFile.close();
     	//ciphertexts written to file
-    	std::cout << "Ciphertexts written to file!" << std::endl;
+    	std::cout << "Claimed ciphertexts written to file!" << std::endl;
 	return 0;
 }

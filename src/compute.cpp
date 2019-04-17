@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 	}
 	ctext1file.close();
 
-	std::cout << "Read cipher 1" << std::endl;
+	std::cout << "Read cipher 2" << std::endl;
 	fstream ctext2file("ciphertext2.txt", fstream::in);
 	int numd2;
 	seekPastChar(ctext2file, '[');

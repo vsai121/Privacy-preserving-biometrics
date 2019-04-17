@@ -11,15 +11,15 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-	long p = 257;                                // Plaintext base [default=2], should be a prime number
+	long p = 1021;                                // Plaintext base [default=2], should be a prime number
 	long r = 1;                                  // Lifting [default=1]
-	long L = 15;                                 // Number of levels in the modulus chain [default=heuristic]
+	long L = 13;                                 // Number of levels in the modulus chain [default=heuristic]
 	long c = 2;                                  // Number of columns in key-switching matrix [default=2]
 	long w = 64;                                 // Hamming weight of secret key
 	long d = 1;                                  // Degree of the field extension [default=1]
 	long k = 80;                                 // Security parameter [default=80]
 	long s = 0;                                  // Minimum number of slots [default=0]
-	bool verbose = false;                        // Output message about m and related parameters
+	bool verbose = true;                        // Output message about m and related parameters
 	bool chosen_m = false;                       // Specify the existance of a particular m
 	long m = FindM(k, L, c, p, d, s, chosen_m, verbose);
 	FHEcontext context(m, p, r); 	             

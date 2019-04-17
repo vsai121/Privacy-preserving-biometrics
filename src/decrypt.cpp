@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 
 	std::unique_ptr<Ctxt> ctxts[numd1][numd2];
 
-	std::cout << "NumD1 = " << numd1 << "NumD2 = " << numd2 << std::endl;
+	std::cout << "NumD1 = " << numd1 << " NumD2 = " << numd2 << std::endl;
 	std::cout << "Started reading from file" << std::endl;
 	for(int i = 0; i < numd1; i++)
 	{
@@ -64,14 +64,14 @@ int main(int argc, char **argv)
 	for(int i = 0; i < numd1; i++)
 	{
 		min = result[i][0][nslots*8-1];
-		std::cout << "Min init = " << min << std::endl;
+		//std::cout << "Min init = " << min << std::endl;
 		for(int j = 0; j < numd2; j++) {
 			if(result[i][j][nslots*8-1] < min)
 				min = result[i][j][nslots*8-1];
 		}
-		std::cout << "Min = " << min << std::endl;
-		score += min;
+		if(min < 64)
+			score += 1;
 	}
-	std::cout << "Score = " << score/numd1 << std::endl;
+	std::cout << "Score = " << (score*100)/numd1 << std::endl;
 	return 0;
 }

@@ -14,8 +14,8 @@
 #include "Minutiae.h"
 #include "GapOptimisation.h"
 #include "Ideka.h"
-#include "fpenhancement.h"
-#include "commonfiles.h"
+//#include "fpenhancement.h"
+//#include "commonfiles.h"
 
 
 
@@ -23,7 +23,7 @@ using namespace cv;
 using namespace cv::xfeatures2d;
 using namespace std;
 
-
+#define ORB_MATCH_THRESH 64
 
 
 
@@ -108,8 +108,8 @@ vector<KeyPoint> computeKeypoints(Mat img){
 
 
 
-  imshow( "Minutiae after filtering", minutImg2 );
-  waitKey(0);
+  //imshow( "Minutiae after filtering", minutImg2 );
+  //waitKey(0);
 
 
   vector<KeyPoint> keypoints;
@@ -135,7 +135,7 @@ vector<KeyPoint> computeKeypoints(Mat img){
 }
 
 
-Mat computeDescriptors(Mat img, vector<KeyPoint> keypoints){
+Mat computeDescriptors(Mat img, vector<KeyPoint> keypoints, const char *fname){
 
 
   Ptr<Feature2D> orb_descriptor = ORB::create();
@@ -162,7 +162,7 @@ Mat computeDescriptors(Mat img, vector<KeyPoint> keypoints){
 
   }
 
-  fstream featureFile("feature.txt", fstream::out);
+  fstream featureFile(fname, fstream::out);
   featureFile<<"[ "<<descriptors.rows<<" ]"<<endl;
 
   for(int i = 0 ; i< descriptors.rows ; i++){
@@ -262,11 +262,11 @@ int main( int argc, const char* argv[] )
 	input1 = denoise(input1);
 	input2 = denoise(input2);
 
-	imshow("Denoisiing", input1);
-	waitKey(0);
+	//imshow("Denoisiing", input1);
+	//waitKey(0);
 
-	imshow("Denoisiing", input2);
-	waitKey(0);
+	//imshow("Denoisiing", input2);
+	//waitKey(0);
 
 
 	/*
@@ -298,11 +298,11 @@ int main( int argc, const char* argv[] )
 	//waitKey(0);
 
 	Mat thinnedImg1 = thin(binarisedImg1);
-	imshow( "Minutaie", thinnedImg1 );
+	//	imshow( "Minutaie", thinnedImg1 );
   waitKey(0);
 
 	Mat thinnedImg2 = thin(binarisedImg2);
-	imshow( "Minutaie", thinnedImg2 );
+	//	imshow( "Minutaie", thinnedImg2 );
   waitKey(0);
 
 
@@ -311,8 +311,8 @@ int main( int argc, const char* argv[] )
   vector<KeyPoint> keypoints1 = computeKeypoints(thinnedImg1);
   vector<KeyPoint> keypoints2 = computeKeypoints(thinnedImg2);
 
-	Mat descriptors1 = computeDescriptors(thinnedImg1, keypoints1);
-	Mat descriptors2 = computeDescriptors(thinnedImg2, keypoints2);
+	Mat descriptors1 = computeDescriptors(thinnedImg1, keypoints1, "feature.txt");
+	Mat descriptors2 = computeDescriptors(thinnedImg2, keypoints2, "feature2.txt");
 
   Ptr<BFMatcher> matcher = BFMatcher::create(NORM_HAMMING, false);
   vector< DMatch > matches;
@@ -321,11 +321,13 @@ int main( int argc, const char* argv[] )
     float score = 0.0;
     for(int i=0; i < matches.size(); i++){
         DMatch current_match = matches[i];
-        score = score + current_match.distance;
+	if(current_match.distance < ORB_MATCH_THRESH)
+		score = score+1;
+        //score = score + current_match.distance;
     }
-    cerr << endl << "Current matching score = " << score/(descriptors1.rows ) << endl;
-		cout<<"Descriptor 1 rows  "<< descriptors1.rows<<endl;
-			cout<<"Descriptor 2 rows  "<< descriptors2.rows<<endl;
+    cout << (score*100)/descriptors1.rows << endl;
+	//		cout<<"Descriptor 1 rows  "<< descriptors1.rows<<endl;
+	//		cout<<"Descriptor 2 rows  "<< descriptors2.rows<<endl;
 
 
 }
