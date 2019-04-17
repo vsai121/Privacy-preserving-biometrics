@@ -3,7 +3,6 @@ project(SecureBiometrics
 LANGUAGES CXX)
 find_package( OpenCV REQUIRED )
 find_package(helib 1.0.0 EXACT REQUIRED)
-find_package( OpenCV REQUIRED )
 find_package(OpenMP)
 
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
@@ -33,7 +32,7 @@ include_directories ("${PROJECT_SOURCE_DIR}/lib/binarisation")
 include_directories ("${PROJECT_SOURCE_DIR}/lib/optimisation")
 include_directories ("${PROJECT_SOURCE_DIR}/lib/gap-optimisation")
 include_directories ("${PROJECT_SOURCE_DIR}/lib/extraction")
-include_directories ("${PROJECT_SOURCE_DIR}/lib/preprocess")
+#include_directories ("${PROJECT_SOURCE_DIR}/lib/preprocess")
 
 
 add_subdirectory(lib/thinning)
@@ -41,10 +40,10 @@ add_subdirectory(lib/binarisation)
 add_subdirectory(lib/optimisation)
 add_subdirectory(lib/gap-optimisation)
 add_subdirectory(lib/extraction)
-add_subdirectory(lib/preprocess)
+#add_subdirectory(lib/preprocess)
 
 add_executable( fingerprint_process src/fingerprint_feature_extractor.cpp )
 
-target_link_libraries( fingerprint_process ${OpenCV_LIBS} ExtractionAlgorithms ThinningAlgorithms BinarisationAlgorithms OptimisationAlgorithms preProcessAlgorithms )
+target_link_libraries( fingerprint_process ${OpenCV_LIBS} ExtractionAlgorithms ThinningAlgorithms BinarisationAlgorithms OptimisationAlgorithms )
 
 
