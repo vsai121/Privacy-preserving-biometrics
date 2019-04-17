@@ -114,6 +114,8 @@ vector<KeyPoint> computeKeypoints(Mat img){
 
   vector<KeyPoint> keypoints;
 
+
+
   for(std::vector<Minutiae>::size_type i = 0; i<minutiae.size(); i++){
 
     float x = minutiae[i].getLocX();
@@ -122,8 +124,7 @@ vector<KeyPoint> computeKeypoints(Mat img){
     Point2f a(x,y);
 
 
-
-    KeyPoint k(a,1,-1,0,0,minutiae[i].getType());
+    KeyPoint k(a,1,0,0,0,minutiae[i].getType());
 
     keypoints.push_back(k);
 
@@ -234,6 +235,21 @@ Mat enhanceImg(Mat myImg){
 	 return enhanced;
 }
 
+Mat denoise(Mat input){
+	Mat se1 = getStructuringElement(MORPH_RECT, Size(5, 5));
+	Mat se2 = getStructuringElement(MORPH_RECT, Size(2, 2));
+
+	 // Perform closing then opening
+ 	Mat mask;
+ 	morphologyEx(input, mask, MORPH_CLOSE, se1);
+ 	morphologyEx(mask, mask, MORPH_OPEN, se2);
+
+ // Filter the output
+ 	Mat out = input.clone();
+ 	out.setTo(Scalar(0), mask == 0);
+
+	return out;
+}
 
 int main( int argc, const char* argv[] )
 {
@@ -241,19 +257,35 @@ int main( int argc, const char* argv[] )
 	Mat input1 = imread(argv[1], IMREAD_GRAYSCALE);
 	Mat input2 = imread(argv[2], IMREAD_GRAYSCALE);
 
-	FPEnhancement fpEnhancement;
-	input1 = fpEnhancement.run(input1);
-	input2 - fpEnhancement.run(input2);
 
-	imshow("enhanced img", input1);
+
+	input1 = denoise(input1);
+	input2 = denoise(input2);
+
+	imshow("Denoisiing", input1);
 	waitKey(0);
 
-	imshow("enhanced img", input2);
+	imshow("Denoisiing", input2);
 	waitKey(0);
 
 
-	input1.convertTo(input1, CV_8U);
-	input2.convertTo(input2, CV_8U);
+	/*
+	FPEnhancement fpenhancement1;
+	FPEnhancement fpenhancement2;
+
+	input1 = fpenhancement1.run(input1);
+	input2 = fpenhancement2.run(input2);
+
+	Mat orientImg1 = fpenhancement1.getOrientationImage();
+	Mat orientImg2 = fpenhancement2.getOrientationImage();
+
+	Mat modinput1;
+	Mat modinput2;
+
+	input1.convertTo(modinput1, CV_8U);
+	input2.convertTo(modinput2, CV_8U);
+
+	*/
 
 
 	Mat binarisedImg1 = binarise(input1);
@@ -266,11 +298,12 @@ int main( int argc, const char* argv[] )
 	//waitKey(0);
 
 	Mat thinnedImg1 = thin(binarisedImg1);
-	//imshow( "Minutaie", thinnedImg1 );
-  //waitKey(0);
+	imshow( "Minutaie", thinnedImg1 );
+  waitKey(0);
+
 	Mat thinnedImg2 = thin(binarisedImg2);
-	//imshow( "Minutaie", thinnedImg2 );
-  //waitKey(0);
+	imshow( "Minutaie", thinnedImg2 );
+  waitKey(0);
 
 
 
@@ -278,8 +311,8 @@ int main( int argc, const char* argv[] )
   vector<KeyPoint> keypoints1 = computeKeypoints(thinnedImg1);
   vector<KeyPoint> keypoints2 = computeKeypoints(thinnedImg2);
 
-	Mat descriptors1 = computeDescriptors(binarisedImg1, keypoints1);
-	Mat descriptors2 = computeDescriptors(binarisedImg2, keypoints2);
+	Mat descriptors1 = computeDescriptors(thinnedImg1, keypoints1);
+	Mat descriptors2 = computeDescriptors(thinnedImg2, keypoints2);
 
   Ptr<BFMatcher> matcher = BFMatcher::create(NORM_HAMMING, false);
   vector< DMatch > matches;
